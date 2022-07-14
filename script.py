@@ -12,26 +12,29 @@ import pandas
 excel_data = pandas.read_excel('Recipients data.xlsx', sheet_name='Recipients')
 
 count = 0
-
-driver = webdriver.Chrome(ChromeDriverManager().install())
+options = webdriver.ChromeOptions()
+options.add_experimental_option('excludeSwitches', ['enable-logging'])
+driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
 driver.get('https://web.whatsapp.com')
+
 input("Press ENTER after login into Whatsapp Web and your chats are visiable.")
 for column in excel_data['Contact'].tolist():
     try:
-        url = 'https://web.whatsapp.com/send?phone=' + str(excel_data['Contact'][count]) + '&text=' + excel_data['Message'][0]
+        url = 'https://web.whatsapp.com/send?phone=' + str(excel_data['Contact'][count]) + '&text=' + excel_data['Message'][count]
         sent = False
         # It tries 3 times to send a message in case if there any error occurred
         driver.get(url)
         try:
             click_btn = WebDriverWait(driver, 35).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, '_4sWnG')))
+                EC.element_to_be_clickable((By.CLASS_NAME, '_1Ae7k')))
         except Exception as e:
             print("Sorry message could not sent to " + str(excel_data['Contact'][count]))
+            print(e)
         else:
             sleep(2)
             click_btn.click()
             sent = True
-            sleep(5)
+            sleep(1)
             print('Message sent to: ' + str(excel_data['Contact'][count]))
         count = count + 1
     except Exception as e:
